@@ -1,0 +1,14 @@
+# Build Artifacts
+*.bin
+*.exe
+*.o
+*.obj
+*.pdb
+*.ilk
+
+# Odin Language Server (OLS)
+.ols_cache/
+ols.json
+
+# Local Environment
+.env
