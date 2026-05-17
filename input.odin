@@ -8,23 +8,31 @@ MaxInputLength :: 50
 
 Cmd :: struct {
 	cmd:  string,
-	args: string,
+	args: [dynamic]string,
 }
 
 stringToCmd :: proc(input: string) -> Cmd {
 	cmd: Cmd
 	if !strings.contains(input, " ") {
-		return {input, ""}
+		return {input, {}}
 	}
 	i := 0
+	isCmd := true
+	lastSpace := 0
 	for r in input {
 		i += 1
 		if r == ' ' {
-			break
+			if isCmd {
+				cmd.cmd = input[:i - 1]
+				isCmd = false
+				lastSpace = i
+			} else {
+				append(&cmd.args, input[lastSpace:i - 1])
+				lastSpace = i
+			}
 		}
 	}
-	cmd.cmd = input[:i]
-	cmd.args = input[i:]
+	append(&cmd.args, input[lastSpace:])
 	return cmd
 
 }
