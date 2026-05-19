@@ -4,13 +4,16 @@ import "core:fmt"
 import "core:os"
 import "core:strings"
 
+// the max number of characters the user can input
 MaxInputLength :: 50
 
+// A Struct to store the user input and pass it around
 Cmd :: struct {
 	cmd:  string,
 	args: [dynamic]string,
 }
 
+// parses the user input string into teh Cmd struct
 stringToCmd :: proc(input: string) -> Cmd {
 	cmd: Cmd
 	if !strings.contains(input, " ") {
@@ -37,6 +40,7 @@ stringToCmd :: proc(input: string) -> Cmd {
 
 }
 
+//gets the users input from standard in
 getUserInput :: proc(buf: []byte) -> (string, int) {
 	fmt.print("Math> ")
 	num_bytes, err := os.read(os.stdin, buf)

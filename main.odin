@@ -3,7 +3,7 @@ package main
 import "core:fmt"
 import "core:strconv"
 
-
+// Main Loop😭
 mainLoop :: proc() {
 	buf: [MaxInputLength]byte
 	for true {
