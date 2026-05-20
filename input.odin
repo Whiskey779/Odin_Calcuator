@@ -21,23 +21,31 @@ stringToCmd :: proc(input: string) -> Cmd {
 	}
 	i := 0
 	isCmd := true
-	lastSpace := 0
+	isLastRuneSpace := true
+	firstletter := 0
 	for r in input {
 		i += 1
 		if r == ' ' {
-			if isCmd {
-				cmd.cmd = input[:i - 1]
-				isCmd = false
-				lastSpace = i
-			} else {
-				append(&cmd.args, input[lastSpace:i - 1])
-				lastSpace = i
+			if !isLastRuneSpace {
+				if isCmd {
+					cmd.cmd = input[firstletter:i - 1]
+					isCmd = false
+				} else {
+					append(&cmd.args, input[firstletter:i - 1])
+				}
 			}
+			isLastRuneSpace = true
+		} else {
+			if isLastRuneSpace {
+				firstletter = i - 1
+			}
+			isLastRuneSpace = false
 		}
 	}
-	append(&cmd.args, input[lastSpace:])
+	if !isLastRuneSpace {
+		append(&cmd.args, input[firstletter:])
+	}
 	return cmd
-
 }
 
 //gets the users input from standard in

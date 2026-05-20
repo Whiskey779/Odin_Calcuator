@@ -6,6 +6,9 @@
 *.pdb
 *.ilk
 
+# Build Directories
+bin/
+
 # Odin Language Server (OLS)
 .ols_cache/
 ols.json
@@ -13,6 +16,5 @@ ols.json
 # Local Environment
 .env
 
-# vsCode
-
+# VSCode
 .vscode/
