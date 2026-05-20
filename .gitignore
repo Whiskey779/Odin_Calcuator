@@ -12,3 +12,7 @@ ols.json
 
 # Local Environment
 .env
+
+# vsCode
+
+.vscode/
