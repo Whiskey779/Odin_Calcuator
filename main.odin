@@ -14,6 +14,13 @@ mainLoop :: proc() {
 		cmd := stringToCmd(input)
 		if cmd.cmd == "exit" {
 			break
+		} else if cmd.cmd == "calc" {
+			value, prefix, err := GetMissingValue(cmd.args)
+			if err != 0 {
+				// add err mesage using prefix
+				continue
+			}
+			fmt.printfln("%s %f", prefix, value)
 		} else if cmd.cmd == "sin" {
 			for str in cmd.args {
 				num, ok := strconv.parse_f32(str)
