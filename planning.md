@@ -4,14 +4,15 @@
 
 ## ToDo List
 
-* Terminal style user input✅
-  * Get input from stdin✅
-  * Parse input to cmd struct✅
-* Pythagorean Theorem
-  * Finding the Hypotenuse
-  * Findin not Hypotenuse
-* Trig calc
+* Terminal style user input ✅
+  * Get input from stdin ✅
+  * Parse input to cmd struct ✅
+* Calc
   * make variable parser
-  * sin
-  * cos
-  * tan
+  * Pythagorean Theorem
+    * Finding the Hypotenuse
+    * Findin not Hypotenuse
+  * Trig calc
+    * sin
+    * cos
+    * tan
