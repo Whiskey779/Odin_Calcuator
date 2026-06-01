@@ -18,9 +18,3 @@
     * tan
 
 
-## Descriptions
-
-### Input parser
-
-### Find Missing Varible Parser
-
