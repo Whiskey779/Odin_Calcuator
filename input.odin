@@ -15,10 +15,10 @@ Cmd :: struct {
 
 // parses the user input string into teh Cmd struct
 stringToCmd :: proc(input: string) -> Cmd {
-	cmd: Cmd
 	if !strings.contains(input, " ") {
 		return {input, {}}
 	}
+	cmd: Cmd
 	i := 0
 	isCmd := true
 	isLastRuneSpace := true
