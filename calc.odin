@@ -12,7 +12,7 @@ Triangle :: struct {
 	rad:        f32,
 }
 
-Defaulat_Triangle :: Triangle {
+Default_Triangle :: Triangle {
 	opposite   = 0,
 	adjacent   = 0,
 	hypotenuse = 0,
@@ -75,7 +75,7 @@ InsertValueTri :: proc(tri: ^Triangle, part: TriParts, value: f32) {
 	}
 }
 
-CalcMissinfPartOfTriangle :: proc(tri: ^Triangle) -> (value: f32, ok: bool) {
+CalcMissingPartOfTriangle :: proc(tri: ^Triangle) -> (value: f32, ok: bool) {
 	if !(tri.adjacent == -1 ||
 		   tri.deg == -1 ||
 		   tri.hypotenuse == -1 ||
@@ -109,7 +109,7 @@ GetMissingValue :: proc(
 	message: string,
 	error: CalculateValueError,
 ) {
-	trig: Triangle = Defaulat_Triangle
+	trig: Triangle = Default_Triangle
 	value = -1
 	error = CalculateValueError.Ok
 	activeTriPart := TriParts.Null
@@ -146,6 +146,6 @@ GetMissingValue :: proc(
 		}
 	}
 	fmt.println(trig)
-	value, _ = CalcMissinfPartOfTriangle(&trig)
+	value, _ = CalcMissingPartOfTriangle(&trig)
 	return
 }
