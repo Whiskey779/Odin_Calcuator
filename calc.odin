@@ -1,6 +1,7 @@
 package main
 
 import "core:fmt"
+import "core:math"
 import "core:strconv"
 
 Triangle :: struct {
@@ -74,6 +75,33 @@ InsertValueTri :: proc(tri: ^Triangle, part: TriParts, value: f32) {
 	}
 }
 
+CalcMissinfPartOfTriangle :: proc(tri: ^Triangle) -> (value: f32, ok: bool) {
+	if !(tri.adjacent == -1 ||
+		   tri.deg == -1 ||
+		   tri.hypotenuse == -1 ||
+		   tri.opposite == -1 ||
+		   tri.rad == -1) {
+		return -1, false
+	}
+
+	if tri.rad == 0 && tri.deg == 0 {
+		if tri.adjacent == 0 || tri.opposite == 0 || tri.hypotenuse == 0 {
+			return -1, false
+		}
+
+		if tri.hypotenuse == -1 {
+			return math.sqrt(tri.adjacent * tri.adjacent + tri.opposite * tri.opposite), true
+		} else if tri.opposite == -1 {
+			return math.sqrt(tri.hypotenuse * tri.hypotenuse - tri.adjacent * tri.adjacent), true
+		} else {
+			return math.sqrt(tri.hypotenuse * tri.hypotenuse - tri.opposite * tri.opposite), true
+		}
+	} else if (tri.rad == 0) != (tri.deg == 0) {
+
+	}
+	return -1, false
+}
+
 GetMissingValue :: proc(
 	input: [dynamic]string,
 ) -> (
@@ -118,5 +146,6 @@ GetMissingValue :: proc(
 		}
 	}
 	fmt.println(trig)
+	value, _ = CalcMissinfPartOfTriangle(&trig)
 	return
 }
