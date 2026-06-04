@@ -16,6 +16,7 @@
       * sin
       * cos
       * tan
+  * help command
 * Testing
   * Terminal style user input
     * Get input from stdin
@@ -29,3 +30,4 @@
       * sin
       * cos
       * tan
+  * Help command
