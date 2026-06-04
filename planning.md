@@ -2,6 +2,12 @@
 
 ## Purpose
 
+## Stakeholder requirements
+* simple languge
+* fast and responive
+* easy to understand how to use it
+* give right number
+* non-right triangle
 ## ToDo List
 * Building
   * Terminal style user input ✅
@@ -31,3 +37,6 @@
       * cos
       * tan
   * Help command
+
+
+3.14159265358979323846
