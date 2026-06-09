@@ -138,31 +138,107 @@ CalcMissingPartOfTriangle :: proc(tri: ^Triangle) -> (value: f32, ok: bool) {
 
 				// Solve for radians.
 				if tri.rad == -1 {
-
+					return math.asin(tri.opposite / tri.hypotenuse), true
 					// Solve for a missing side using radians.
 				} else {
-
+					if tri.opposite == -1 {
+						ans := math.sin(tri.rad) * tri.hypotenuse
+						return ans, true
+					} else if tri.hypotenuse == -1 {
+						ans := tri.opposite / math.sin(tri.rad)
+						return ans, true
+					} else {
+						return -1, false
+					}
 				}
 
 			} else {
 
 				// Solve for degrees.
 				if tri.deg == -1 {
-
+					return math.asin(tri.opposite / tri.hypotenuse) * (math.PI / 180), true
 					// Solve for a missing side using degrees.
 				} else {
-
+					if tri.opposite == -1 {
+						ans := math.sin(tri.deg * (math.PI / 180)) * tri.hypotenuse
+						return ans, true
+					} else if tri.hypotenuse == -1 {
+						ans := tri.opposite / math.sin(tri.rad * (math.PI / 180))
+						return ans, true
+					} else {
+						return -1, false
+					}
 				}
 			}
 
 			// Adjacent + Hypotenuse available.
 			// Use cosine relationships.
 		} else if tri.adjacent != 0 && tri.hypotenuse != 0 {
-
+			if tri.rad != 0 {
+				if tri.rad == -1 {
+					ans := math.acos(tri.adjacent / tri.hypotenuse)
+					return ans, true
+				} else {
+					if tri.adjacent == -1 {
+						ans := math.cos(tri.rad) * tri.hypotenuse
+						return ans, true
+					} else if tri.hypotenuse == -1 {
+						ans := tri.adjacent / math.cos(tri.rad)
+						return ans, true
+					} else {
+						return -1, false
+					}
+				}
+			} else {
+				if tri.deg == -1 {
+					ans := math.acos(tri.adjacent / tri.hypotenuse) * (math.PI / 180)
+					return ans, true
+				} else {
+					if tri.adjacent == -1 {
+						ans := math.cos(tri.deg * (math.PI / 180)) * tri.hypotenuse
+						return ans, true
+					} else if tri.hypotenuse == -1 {
+						ans := tri.adjacent / math.cos(tri.deg * (math.PI / 180))
+						return ans, true
+					} else {
+						return -1, false
+					}
+				}
+			}
 			// Adjacent + Opposite available.
 			// Use tangent relationships.
 		} else if tri.adjacent != 0 && tri.opposite != 0 {
-
+			if tri.rad != 0 {
+				if tri.rad == -1 {
+					ans := math.atan(tri.opposite / tri.adjacent)
+					return ans, true
+				} else {
+					if tri.opposite == -1 {
+						ans := math.tan(tri.rad) * tri.adjacent
+						return ans, true
+					} else if tri.adjacent == -1 {
+						ans := tri.opposite / math.tan(tri.rad)
+						return ans, true
+					} else {
+						return -1, true
+					}
+				}
+			} else {
+				if tri.deg == -1 {
+					ans := math.atan(tri.opposite / tri.adjacent) * (math.PI / 180)
+					return ans, true
+				} else {
+					if tri.opposite == -1 {
+						ans := math.tan(tri.deg * (math.PI / 180)) * tri.adjacent
+						return ans, true
+					} else if tri.adjacent == -1 {
+						ans := tri.opposite / math.tan(tri.deg * (math.PI / 180))
+						return ans, true
+					} else {
+						return -1, true
+					}
+				}
+			}
 		}
 	}
 
