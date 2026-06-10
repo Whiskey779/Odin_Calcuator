@@ -156,7 +156,7 @@ CalcMissingPartOfTriangle :: proc(tri: ^Triangle) -> (value: f32, ok: bool) {
 
 				// Solve for degrees.
 				if tri.deg == -1 {
-					return math.asin(tri.opposite / tri.hypotenuse) * (math.PI / 180), true
+					return math.asin(tri.opposite / tri.hypotenuse) * (180 / math.PI), true
 					// Solve for a missing side using degrees.
 				} else {
 					if tri.opposite == -1 {
@@ -191,7 +191,7 @@ CalcMissingPartOfTriangle :: proc(tri: ^Triangle) -> (value: f32, ok: bool) {
 				}
 			} else {
 				if tri.deg == -1 {
-					ans := math.acos(tri.adjacent / tri.hypotenuse) * (math.PI / 180)
+					ans := math.acos(tri.adjacent / tri.hypotenuse) * (180 / math.PI)
 					return ans, true
 				} else {
 					if tri.adjacent == -1 {
@@ -225,7 +225,7 @@ CalcMissingPartOfTriangle :: proc(tri: ^Triangle) -> (value: f32, ok: bool) {
 				}
 			} else {
 				if tri.deg == -1 {
-					ans := math.atan(tri.opposite / tri.adjacent) * (math.PI / 180)
+					ans := math.atan(tri.opposite / tri.adjacent) * (180 / math.PI)
 					return ans, true
 				} else {
 					if tri.opposite == -1 {
