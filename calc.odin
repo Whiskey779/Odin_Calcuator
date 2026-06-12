@@ -61,14 +61,6 @@ GetTriPart :: proc(str: string) -> TriParts {
 	}
 }
 
-// Possible parsing/calculation errors.
-CalculateValueError :: enum {
-	Ok,
-	TriPartNotRecognised,
-	MissingEquales,
-	FloatConvertion,
-}
-
 // Inserts a value into the selected triangle field.
 InsertValueTri :: proc(tri: ^Triangle, part: TriParts, value: f32) {
 	switch part {
@@ -86,6 +78,17 @@ InsertValueTri :: proc(tri: ^Triangle, part: TriParts, value: f32) {
 	}
 }
 
+CalcPartOfTriangleReturnValues :: enum {
+	NoMissingValue,
+	NotEoughInfo,
+	FoundSideOpposite,
+	FoundSideAdjacent,
+	FoundSideHypotenuse,
+	FoundAngleRad,
+	FoundAngleDeg,
+	Error,
+}
+
 // Calculates the missing triangle value.
 //
 // Currently supports:
@@ -94,7 +97,12 @@ InsertValueTri :: proc(tri: ^Triangle, part: TriParts, value: f32) {
 // Planned:
 //   - Trigonometric calculations using
 //     sin, cos, and tan.
-CalcMissingPartOfTriangle :: proc(tri: ^Triangle) -> (value: f32, ok: bool) {
+CalcMissingPartOfTriangle :: proc(
+	tri: ^Triangle,
+) -> (
+	value: f32,
+	type: CalcPartOfTriangleReturnValues,
+) {
 
 	// Ensure there is at least one unknown value.
 	if !(tri.adjacent == -1 ||
@@ -102,7 +110,7 @@ CalcMissingPartOfTriangle :: proc(tri: ^Triangle) -> (value: f32, ok: bool) {
 		   tri.hypotenuse == -1 ||
 		   tri.opposite == -1 ||
 		   tri.rad == -1) {
-		return -1, false
+		return -1, CalcPartOfTriangleReturnValues.NoMissingValue
 	}
 
 	// No angle information provided.
@@ -110,20 +118,23 @@ CalcMissingPartOfTriangle :: proc(tri: ^Triangle) -> (value: f32, ok: bool) {
 	if tri.rad == 0 && tri.deg == 0 {
 
 		if tri.adjacent == 0 || tri.opposite == 0 || tri.hypotenuse == 0 {
-			return -1, false
+			return -1, CalcPartOfTriangleReturnValues.NotEoughInfo
 		}
 
 		// Solve hypotenuse.
 		if tri.hypotenuse == -1 {
-			return math.sqrt(tri.adjacent * tri.adjacent + tri.opposite * tri.opposite), true
+			return math.sqrt(tri.adjacent * tri.adjacent + tri.opposite * tri.opposite),
+				CalcPartOfTriangleReturnValues.FoundSideHypotenuse
 
 			// Solve opposite side.
 		} else if tri.opposite == -1 {
-			return math.sqrt(tri.hypotenuse * tri.hypotenuse - tri.adjacent * tri.adjacent), true
+			return math.sqrt(tri.hypotenuse * tri.hypotenuse - tri.adjacent * tri.adjacent),
+				CalcPartOfTriangleReturnValues.FoundSideOpposite
 
 			// Solve adjacent side.
 		} else {
-			return math.sqrt(tri.hypotenuse * tri.hypotenuse - tri.opposite * tri.opposite), true
+			return math.sqrt(tri.hypotenuse * tri.hypotenuse - tri.opposite * tri.opposite),
+				CalcPartOfTriangleReturnValues.FoundSideAdjacent
 		}
 
 		// Exactly one angle representation exists.
@@ -138,17 +149,16 @@ CalcMissingPartOfTriangle :: proc(tri: ^Triangle) -> (value: f32, ok: bool) {
 
 				// Solve for radians.
 				if tri.rad == -1 {
-					return math.asin(tri.opposite / tri.hypotenuse), true
+					return math.asin(tri.opposite / tri.hypotenuse),
+						CalcPartOfTriangleReturnValues.FoundAngleRad
 					// Solve for a missing side using radians.
 				} else {
 					if tri.opposite == -1 {
 						ans := math.sin(tri.rad) * tri.hypotenuse
-						return ans, true
+						return ans, CalcPartOfTriangleReturnValues.FoundSideOpposite
 					} else if tri.hypotenuse == -1 {
 						ans := tri.opposite / math.sin(tri.rad)
-						return ans, true
-					} else {
-						return -1, false
+						return ans, CalcPartOfTriangleReturnValues.FoundSideHypotenuse
 					}
 				}
 
@@ -156,93 +166,86 @@ CalcMissingPartOfTriangle :: proc(tri: ^Triangle) -> (value: f32, ok: bool) {
 
 				// Solve for degrees.
 				if tri.deg == -1 {
-					return math.asin(tri.opposite / tri.hypotenuse) * (180 / math.PI), true
+					return math.asin(tri.opposite / tri.hypotenuse) * (180 / math.PI),
+						CalcPartOfTriangleReturnValues.FoundAngleDeg
 					// Solve for a missing side using degrees.
 				} else {
 					if tri.opposite == -1 {
 						ans := math.sin(tri.deg * (math.PI / 180)) * tri.hypotenuse
-						return ans, true
+						return ans, CalcPartOfTriangleReturnValues.FoundSideOpposite
 					} else if tri.hypotenuse == -1 {
 						ans := tri.opposite / math.sin(tri.rad * (math.PI / 180))
-						return ans, true
-					} else {
-						return -1, false
+						return ans, CalcPartOfTriangleReturnValues.FoundSideHypotenuse
 					}
 				}
 			}
 
 			// Adjacent + Hypotenuse available.
 			// Use cosine relationships.
-		} else if tri.adjacent != 0 && tri.hypotenuse != 0 {
+		}
+		if tri.adjacent != 0 && tri.hypotenuse != 0 {
 			if tri.rad != 0 {
 				if tri.rad == -1 {
 					ans := math.acos(tri.adjacent / tri.hypotenuse)
-					return ans, true
+					return ans, CalcPartOfTriangleReturnValues.FoundAngleRad
 				} else {
 					if tri.adjacent == -1 {
 						ans := math.cos(tri.rad) * tri.hypotenuse
-						return ans, true
+						return ans, CalcPartOfTriangleReturnValues.FoundSideAdjacent
 					} else if tri.hypotenuse == -1 {
 						ans := tri.adjacent / math.cos(tri.rad)
-						return ans, true
-					} else {
-						return -1, false
+						return ans, CalcPartOfTriangleReturnValues.FoundSideHypotenuse
 					}
 				}
 			} else {
 				if tri.deg == -1 {
 					ans := math.acos(tri.adjacent / tri.hypotenuse) * (180 / math.PI)
-					return ans, true
+					return ans, CalcPartOfTriangleReturnValues.FoundAngleDeg
 				} else {
 					if tri.adjacent == -1 {
 						ans := math.cos(tri.deg * (math.PI / 180)) * tri.hypotenuse
-						return ans, true
+						return ans, CalcPartOfTriangleReturnValues.FoundSideAdjacent
 					} else if tri.hypotenuse == -1 {
 						ans := tri.adjacent / math.cos(tri.deg * (math.PI / 180))
-						return ans, true
-					} else {
-						return -1, false
+						return ans, CalcPartOfTriangleReturnValues.FoundSideHypotenuse
 					}
 				}
 			}
 			// Adjacent + Opposite available.
 			// Use tangent relationships.
-		} else if tri.adjacent != 0 && tri.opposite != 0 {
+		}
+		if tri.adjacent != 0 && tri.opposite != 0 {
 			if tri.rad != 0 {
 				if tri.rad == -1 {
 					ans := math.atan(tri.opposite / tri.adjacent)
-					return ans, true
+					return ans, CalcPartOfTriangleReturnValues.FoundAngleRad
 				} else {
 					if tri.opposite == -1 {
 						ans := math.tan(tri.rad) * tri.adjacent
-						return ans, true
+						return ans, CalcPartOfTriangleReturnValues.FoundSideOpposite
 					} else if tri.adjacent == -1 {
 						ans := tri.opposite / math.tan(tri.rad)
-						return ans, true
-					} else {
-						return -1, true
+						return ans, CalcPartOfTriangleReturnValues.FoundSideAdjacent
 					}
 				}
 			} else {
 				if tri.deg == -1 {
 					ans := math.atan(tri.opposite / tri.adjacent) * (180 / math.PI)
-					return ans, true
+					return ans, CalcPartOfTriangleReturnValues.FoundAngleDeg
 				} else {
 					if tri.opposite == -1 {
 						ans := math.tan(tri.deg * (math.PI / 180)) * tri.adjacent
-						return ans, true
+						return ans, CalcPartOfTriangleReturnValues.FoundSideOpposite
 					} else if tri.adjacent == -1 {
 						ans := tri.opposite / math.tan(tri.deg * (math.PI / 180))
-						return ans, true
-					} else {
-						return -1, true
+						return ans, CalcPartOfTriangleReturnValues.FoundSideAdjacent
 					}
 				}
 			}
 		}
 	}
 
-	return -1, false
+	return -1, CalcPartOfTriangleReturnValues.Error
 }
 
 // Parses input tokens and calculates the missing value.
@@ -253,18 +256,12 @@ CalcMissingPartOfTriangle :: proc(tri: ^Triangle) -> (value: f32, ok: bool) {
 // Returns:
 //   value   -> calculated answer
 //   message -> error description
-//   error   -> error code
-GetMissingValue :: proc(
-	input: [dynamic]string,
-) -> (
-	value: f32,
-	message: string,
-	error: CalculateValueError,
-) {
+//   ok      -> did it succeed
+GetMissingValue :: proc(input: [dynamic]string) -> (value: f32, message: string, ok: bool) {
 	trig: Triangle = Default_Triangle
 
 	value = -1
-	error = CalculateValueError.Ok
+	ok = true
 
 	activeTriPart := TriParts.Null
 
@@ -279,7 +276,7 @@ GetMissingValue :: proc(
 			activeTriPart = GetTriPart(token)
 
 			if activeTriPart == TriParts.Null {
-				error = CalculateValueError.TriPartNotRecognised
+				ok = false
 				message = fmt.tprintf("Error: '%s' is not a part of a triangle.", token)
 				return
 			}
@@ -291,7 +288,7 @@ GetMissingValue :: proc(
 
 			if token != "=" {
 				message = fmt.tprintf("Error: Expected '=' but got '%s'", token)
-				error = CalculateValueError.MissingEquales
+				ok = false
 				return
 			}
 
@@ -312,7 +309,7 @@ GetMissingValue :: proc(
 
 				if !ok {
 					message = fmt.tprintf("Error: Can not convert '%s' to float", token)
-					error = CalculateValueError.FloatConvertion
+					ok = false
 					return
 				}
 
@@ -324,11 +321,35 @@ GetMissingValue :: proc(
 		}
 	}
 
-	// Debug output.
-	fmt.println(trig)
-
 	// Attempt to solve the triangle.
-	value, _ = CalcMissingPartOfTriangle(&trig)
+	ans, type := CalcMissingPartOfTriangle(&trig)
+
+	switch type {
+	case CalcPartOfTriangleReturnValues.NoMissingValue:
+		message = "Error: No missing part to find. Please define one with '?'"
+		ok = false
+	case CalcPartOfTriangleReturnValues.NotEoughInfo:
+		ok = false
+		message = "Error: Not enough info to find the part you are looking for"
+	case CalcPartOfTriangleReturnValues.Error:
+		ok = false
+		message = "Error: Faild to find missing side"
+	case CalcPartOfTriangleReturnValues.FoundSideOpposite:
+		value = ans
+		message = "The opposite side is equal to "
+	case CalcPartOfTriangleReturnValues.FoundSideAdjacent:
+		value = ans
+		message = "The adjacent side is equal to "
+	case CalcPartOfTriangleReturnValues.FoundSideHypotenuse:
+		value = ans
+		message = "The hypotenuse side is equal to "
+	case CalcPartOfTriangleReturnValues.FoundAngleRad:
+		value = ans
+		message = "The main angle of this triangle in radians is "
+	case CalcPartOfTriangleReturnValues.FoundAngleDeg:
+		value = ans
+		message = "The main angle of this triangle in degrees is "
+	}
 
 	return
 }

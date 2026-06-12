@@ -15,8 +15,8 @@ mainLoop :: proc() {
 		if cmd.cmd == "exit" {
 			break
 		} else if cmd.cmd == "calc" {
-			value, message, err := GetMissingValue(cmd.args)
-			if err != CalculateValueError.Ok {
+			value, message, ok := GetMissingValue(cmd.args)
+			if !ok {
 				fmt.println(message)
 				continue
 			}
