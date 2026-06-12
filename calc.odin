@@ -336,19 +336,19 @@ GetMissingValue :: proc(input: [dynamic]string) -> (value: f32, message: string,
 		message = "Error: Faild to find missing side"
 	case CalcPartOfTriangleReturnValues.FoundSideOpposite:
 		value = ans
-		message = "The opposite side is equal to "
+		message = "The opposite side is equal to"
 	case CalcPartOfTriangleReturnValues.FoundSideAdjacent:
 		value = ans
-		message = "The adjacent side is equal to "
+		message = "The adjacent side is equal to"
 	case CalcPartOfTriangleReturnValues.FoundSideHypotenuse:
 		value = ans
-		message = "The hypotenuse side is equal to "
+		message = "The hypotenuse side is equal to"
 	case CalcPartOfTriangleReturnValues.FoundAngleRad:
 		value = ans
-		message = "The main angle of this triangle in radians is "
+		message = "The main angle of this triangle in radians is"
 	case CalcPartOfTriangleReturnValues.FoundAngleDeg:
 		value = ans
-		message = "The main angle of this triangle in degrees is "
+		message = "The main angle of this triangle in degrees is"
 	}
 
 	return
