@@ -80,6 +80,7 @@ InsertValueTri :: proc(tri: ^Triangle, part: TriParts, value: f32) {
 
 CalcPartOfTriangleReturnValues :: enum {
 	NoMissingValue,
+	NotANumber,
 	NotEoughInfo,
 	FoundSideOpposite,
 	FoundSideAdjacent,
@@ -123,18 +124,26 @@ CalcMissingPartOfTriangle :: proc(
 
 		// Solve hypotenuse.
 		if tri.hypotenuse == -1 {
-			return math.sqrt(tri.adjacent * tri.adjacent + tri.opposite * tri.opposite),
-				CalcPartOfTriangleReturnValues.FoundSideHypotenuse
-
+			ans := math.sqrt(tri.adjacent * tri.adjacent + tri.opposite * tri.opposite)
+			if math.is_nan(ans) {
+				return -1, CalcPartOfTriangleReturnValues.NotANumber
+			}
+			return ans, CalcPartOfTriangleReturnValues.FoundSideHypotenuse
 			// Solve opposite side.
 		} else if tri.opposite == -1 {
-			return math.sqrt(tri.hypotenuse * tri.hypotenuse - tri.adjacent * tri.adjacent),
-				CalcPartOfTriangleReturnValues.FoundSideOpposite
+			ans := math.sqrt(tri.hypotenuse * tri.hypotenuse - tri.adjacent * tri.adjacent)
+			if math.is_nan(ans) {
+				return -1, CalcPartOfTriangleReturnValues.NotANumber
+			}
+			return ans, CalcPartOfTriangleReturnValues.FoundSideOpposite
 
 			// Solve adjacent side.
 		} else {
-			return math.sqrt(tri.hypotenuse * tri.hypotenuse - tri.opposite * tri.opposite),
-				CalcPartOfTriangleReturnValues.FoundSideAdjacent
+			ans := math.sqrt(tri.hypotenuse * tri.hypotenuse - tri.opposite * tri.opposite)
+			if math.is_nan(ans) {
+				return -1, CalcPartOfTriangleReturnValues.NotANumber
+			}
+			return ans, CalcPartOfTriangleReturnValues.FoundSideAdjacent
 		}
 
 		// Exactly one angle representation exists.
@@ -149,15 +158,24 @@ CalcMissingPartOfTriangle :: proc(
 
 				// Solve for radians.
 				if tri.rad == -1 {
-					return math.asin(tri.opposite / tri.hypotenuse),
-						CalcPartOfTriangleReturnValues.FoundAngleRad
+					ans := math.asin(tri.opposite / tri.hypotenuse)
+					if math.is_nan(ans) {
+						return -1, CalcPartOfTriangleReturnValues.NotANumber
+					}
+					return ans, CalcPartOfTriangleReturnValues.FoundAngleRad
 					// Solve for a missing side using radians.
 				} else {
 					if tri.opposite == -1 {
 						ans := math.sin(tri.rad) * tri.hypotenuse
+						if math.is_nan(ans) {
+							return -1, CalcPartOfTriangleReturnValues.NotANumber
+						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideOpposite
 					} else if tri.hypotenuse == -1 {
 						ans := tri.opposite / math.sin(tri.rad)
+						if math.is_nan(ans) {
+							return -1, CalcPartOfTriangleReturnValues.NotANumber
+						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideHypotenuse
 					}
 				}
@@ -166,15 +184,24 @@ CalcMissingPartOfTriangle :: proc(
 
 				// Solve for degrees.
 				if tri.deg == -1 {
-					return math.asin(tri.opposite / tri.hypotenuse) * (180 / math.PI),
-						CalcPartOfTriangleReturnValues.FoundAngleDeg
+					ans := math.asin(tri.opposite / tri.hypotenuse) * (180 / math.PI)
+					if math.is_nan(ans) {
+						return -1, CalcPartOfTriangleReturnValues.NotANumber
+					}
+					return ans, CalcPartOfTriangleReturnValues.FoundAngleDeg
 					// Solve for a missing side using degrees.
 				} else {
 					if tri.opposite == -1 {
 						ans := math.sin(tri.deg * (math.PI / 180)) * tri.hypotenuse
+						if math.is_nan(ans) {
+							return -1, CalcPartOfTriangleReturnValues.NotANumber
+						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideOpposite
 					} else if tri.hypotenuse == -1 {
 						ans := tri.opposite / math.sin(tri.rad * (math.PI / 180))
+						if math.is_nan(ans) {
+							return -1, CalcPartOfTriangleReturnValues.NotANumber
+						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideHypotenuse
 					}
 				}
@@ -187,26 +214,44 @@ CalcMissingPartOfTriangle :: proc(
 			if tri.rad != 0 {
 				if tri.rad == -1 {
 					ans := math.acos(tri.adjacent / tri.hypotenuse)
+					if math.is_nan(ans) {
+						return -1, CalcPartOfTriangleReturnValues.NotANumber
+					}
 					return ans, CalcPartOfTriangleReturnValues.FoundAngleRad
 				} else {
 					if tri.adjacent == -1 {
 						ans := math.cos(tri.rad) * tri.hypotenuse
+						if math.is_nan(ans) {
+							return -1, CalcPartOfTriangleReturnValues.NotANumber
+						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideAdjacent
 					} else if tri.hypotenuse == -1 {
 						ans := tri.adjacent / math.cos(tri.rad)
+						if math.is_nan(ans) {
+							return -1, CalcPartOfTriangleReturnValues.NotANumber
+						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideHypotenuse
 					}
 				}
 			} else {
 				if tri.deg == -1 {
 					ans := math.acos(tri.adjacent / tri.hypotenuse) * (180 / math.PI)
+					if math.is_nan(ans) {
+						return -1, CalcPartOfTriangleReturnValues.NotANumber
+					}
 					return ans, CalcPartOfTriangleReturnValues.FoundAngleDeg
 				} else {
 					if tri.adjacent == -1 {
 						ans := math.cos(tri.deg * (math.PI / 180)) * tri.hypotenuse
+						if math.is_nan(ans) {
+							return -1, CalcPartOfTriangleReturnValues.NotANumber
+						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideAdjacent
 					} else if tri.hypotenuse == -1 {
 						ans := tri.adjacent / math.cos(tri.deg * (math.PI / 180))
+						if math.is_nan(ans) {
+							return -1, CalcPartOfTriangleReturnValues.NotANumber
+						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideHypotenuse
 					}
 				}
@@ -218,26 +263,44 @@ CalcMissingPartOfTriangle :: proc(
 			if tri.rad != 0 {
 				if tri.rad == -1 {
 					ans := math.atan(tri.opposite / tri.adjacent)
+					if math.is_nan(ans) {
+						return -1, CalcPartOfTriangleReturnValues.NotANumber
+					}
 					return ans, CalcPartOfTriangleReturnValues.FoundAngleRad
 				} else {
 					if tri.opposite == -1 {
 						ans := math.tan(tri.rad) * tri.adjacent
+						if math.is_nan(ans) {
+							return -1, CalcPartOfTriangleReturnValues.NotANumber
+						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideOpposite
 					} else if tri.adjacent == -1 {
 						ans := tri.opposite / math.tan(tri.rad)
+						if math.is_nan(ans) {
+							return -1, CalcPartOfTriangleReturnValues.NotANumber
+						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideAdjacent
 					}
 				}
 			} else {
 				if tri.deg == -1 {
 					ans := math.atan(tri.opposite / tri.adjacent) * (180 / math.PI)
+					if math.is_nan(ans) {
+						return -1, CalcPartOfTriangleReturnValues.NotANumber
+					}
 					return ans, CalcPartOfTriangleReturnValues.FoundAngleDeg
 				} else {
 					if tri.opposite == -1 {
 						ans := math.tan(tri.deg * (math.PI / 180)) * tri.adjacent
+						if math.is_nan(ans) {
+							return -1, CalcPartOfTriangleReturnValues.NotANumber
+						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideOpposite
 					} else if tri.adjacent == -1 {
 						ans := tri.opposite / math.tan(tri.deg * (math.PI / 180))
+						if math.is_nan(ans) {
+							return -1, CalcPartOfTriangleReturnValues.NotANumber
+						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideAdjacent
 					}
 				}
@@ -334,6 +397,9 @@ GetMissingValue :: proc(input: [dynamic]string) -> (value: f32, message: string,
 	case CalcPartOfTriangleReturnValues.Error:
 		ok = false
 		message = "Error: Faild to find missing side"
+	case CalcPartOfTriangleReturnValues.NotANumber:
+		ok = false
+		message = "Error: Please make sure that the triangle is posible. (hint: make sure the hypotenues is bigger than the opposite and adjacent)"
 	case CalcPartOfTriangleReturnValues.FoundSideOpposite:
 		value = ans
 		message = "The opposite side is equal to"
