@@ -184,7 +184,7 @@ CalcMissingPartOfTriangle :: proc(
 
 				// Solve for degrees.
 				if tri.deg == -1 {
-					ans := math.asin(tri.opposite / tri.hypotenuse) * (180 / math.PI)
+					ans := math.to_degrees(math.asin(tri.opposite / tri.hypotenuse))
 					if math.is_nan(ans) {
 						return -1, CalcPartOfTriangleReturnValues.NotANumber
 					}
@@ -192,13 +192,13 @@ CalcMissingPartOfTriangle :: proc(
 					// Solve for a missing side using degrees.
 				} else {
 					if tri.opposite == -1 {
-						ans := math.sin(tri.deg * (math.PI / 180)) * tri.hypotenuse
+						ans := math.sin(math.to_radians(tri.deg)) * tri.hypotenuse
 						if math.is_nan(ans) {
 							return -1, CalcPartOfTriangleReturnValues.NotANumber
 						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideOpposite
 					} else if tri.hypotenuse == -1 {
-						ans := tri.opposite / math.sin(tri.rad * (math.PI / 180))
+						ans := tri.opposite / math.sin(math.to_radians(tri.deg))
 						if math.is_nan(ans) {
 							return -1, CalcPartOfTriangleReturnValues.NotANumber
 						}
@@ -235,20 +235,20 @@ CalcMissingPartOfTriangle :: proc(
 				}
 			} else {
 				if tri.deg == -1 {
-					ans := math.acos(tri.adjacent / tri.hypotenuse) * (180 / math.PI)
+					ans := math.to_degrees(math.acos(tri.adjacent / tri.hypotenuse))
 					if math.is_nan(ans) {
 						return -1, CalcPartOfTriangleReturnValues.NotANumber
 					}
 					return ans, CalcPartOfTriangleReturnValues.FoundAngleDeg
 				} else {
 					if tri.adjacent == -1 {
-						ans := math.cos(tri.deg * (math.PI / 180)) * tri.hypotenuse
+						ans := math.cos(math.to_radians(tri.deg)) * tri.hypotenuse
 						if math.is_nan(ans) {
 							return -1, CalcPartOfTriangleReturnValues.NotANumber
 						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideAdjacent
 					} else if tri.hypotenuse == -1 {
-						ans := tri.adjacent / math.cos(tri.deg * (math.PI / 180))
+						ans := tri.adjacent / math.cos(math.to_radians(tri.deg))
 						if math.is_nan(ans) {
 							return -1, CalcPartOfTriangleReturnValues.NotANumber
 						}
@@ -284,20 +284,20 @@ CalcMissingPartOfTriangle :: proc(
 				}
 			} else {
 				if tri.deg == -1 {
-					ans := math.atan(tri.opposite / tri.adjacent) * (180 / math.PI)
+					ans := math.to_degrees(math.atan(tri.opposite / tri.adjacent))
 					if math.is_nan(ans) {
 						return -1, CalcPartOfTriangleReturnValues.NotANumber
 					}
 					return ans, CalcPartOfTriangleReturnValues.FoundAngleDeg
 				} else {
 					if tri.opposite == -1 {
-						ans := math.tan(tri.deg * (math.PI / 180)) * tri.adjacent
+						ans := math.tan(math.to_radians(tri.deg)) * tri.adjacent
 						if math.is_nan(ans) {
 							return -1, CalcPartOfTriangleReturnValues.NotANumber
 						}
 						return ans, CalcPartOfTriangleReturnValues.FoundSideOpposite
 					} else if tri.adjacent == -1 {
-						ans := tri.opposite / math.tan(tri.deg * (math.PI / 180))
+						ans := tri.opposite / math.tan(math.to_radians(tri.deg))
 						if math.is_nan(ans) {
 							return -1, CalcPartOfTriangleReturnValues.NotANumber
 						}
@@ -368,11 +368,17 @@ GetMissingValue :: proc(input: [dynamic]string) -> (value: f32, message: string,
 			} else {
 
 				// Convert text to float.
-				num, ok := strconv.parse_f32(token)
+				num, err := strconv.parse_f32(token)
 
-				if !ok {
+				if !err {
 					message = fmt.tprintf("Error: Can not convert '%s' to float", token)
 					ok = false
+					return
+				}
+
+				if num <= 0 {
+					ok = false
+					message = "Error: input value must be bigger than zero"
 					return
 				}
 
