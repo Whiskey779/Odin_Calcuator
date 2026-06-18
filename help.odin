@@ -3,9 +3,32 @@ package main
 import "core:fmt"
 
 PrintHelpDoc :: proc() {
-	fmt.println("----------------- Help Doc -----------------")
-	fmt.println("To exit the programme enter 'exit'")
-	fmt.print(
-		"To use basic trig functions like sin cos and tan with degrees you can by stating the function then the values you would like to use\n e.g. sin 30 45 90\n",
+	fmt.println(
+		`OTRIG - Right Triangle Calculator
+
+Usage:
+    otrig [values]
+    otrig help
+    otrig --help
+    otrig -h
+
+Examples:
+    otrig o=4 h=5 a=?
+    otrig o=6 h=9 deg=?
+    otrig deg=45 a=10 h=?
+    otrig rad=0.5 h=8 o=?
+
+Variables:
+    o      opposite side
+    a      adjacent side
+    h      hypotenuse
+    deg    angle in degrees
+    rad    angle in radians
+
+Rules:
+    - Exactly one value must be ?
+    - Provide enough information to solve a right triangle
+    - Use either deg or rad for angles
+`,
 	)
 }

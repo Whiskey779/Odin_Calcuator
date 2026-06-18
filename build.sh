@@ -2,7 +2,7 @@
 
 set -e
 
-PROJECT_NAME="Odin_Calcuator"
+PROJECT_NAME="otrig"
 SOURCE_DIR="."
 BUILD_DIR="bin"
 

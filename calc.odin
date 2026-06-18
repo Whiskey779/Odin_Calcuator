@@ -320,7 +320,7 @@ CalcMissingPartOfTriangle :: proc(
 //   value   -> calculated answer
 //   message -> error description
 //   ok      -> did it succeed
-GetMissingValue :: proc(input: [dynamic]string) -> (value: f32, message: string, ok: bool) {
+GetMissingValue :: proc(input: []string) -> (value: f32, message: string, ok: bool) {
 	trig: Triangle = Default_Triangle
 
 	value = -1

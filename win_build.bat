@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set "PROJECT_NAME=Odin_Calcuator"
+set "PROJECT_NAME=otrig"
 set "SOURCE_DIR=."
 set "BUILD_DIR=bin"
 
