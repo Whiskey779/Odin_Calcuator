@@ -14,6 +14,8 @@ mainLoop :: proc() {
 		cmd := stringToCmd(input)
 		if cmd.cmd == "exit" {
 			break
+		} else if cmd.cmd == "help" {
+			PrintHelpDoc()
 		} else if cmd.cmd == "calc" {
 			value, message, ok := GetMissingValue(cmd.args)
 			if !ok {
@@ -48,10 +50,13 @@ mainLoop :: proc() {
 				}
 				fmt.printfln("tan(%f) = %f", num, GetTan(num))
 			}
+		} else if cmd.cmd != "" {
+			fmt.printfln("Error: No command called '%s'", cmd)
 		}
 	}
 }
 
 main :: proc() {
+	fmt.println("Enter 'help' to get usage info")
 	mainLoop()
 }
