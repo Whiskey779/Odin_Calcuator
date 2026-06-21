@@ -4,7 +4,6 @@ import "core:fmt"
 import "core:os"
 
 main :: proc() {
-	//mainLoop()
 	if len(os.args) < 2 {
 		fmt.println("Enter the 'help' command to get usage info")
 		return

@@ -380,6 +380,10 @@ GetMissingValue :: proc(input: []string) -> (value: f32, message: string, ok: bo
 					ok = false
 					message = "Error: input value must be bigger than zero"
 					return
+				} else if num >= 1000 {
+					ok = false
+					message = "Error: input value must be smaller than 1000"
+					return
 				}
 
 				InsertValueTri(&trig, activeTriPart, num)
