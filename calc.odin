@@ -80,6 +80,8 @@ InsertValueTri :: proc(tri: ^Triangle, part: TriParts, value: f32) {
 
 CalcPartOfTriangleReturnValues :: enum {
 	NoMissingValue,
+	ToManyMissingValues,
+	ToManyValues,
 	NotANumber,
 	NotEoughInfo,
 	FoundSideOpposite,
@@ -106,12 +108,19 @@ CalcMissingPartOfTriangle :: proc(
 ) {
 
 	// Ensure there is at least one unknown value.
-	if !(tri.adjacent == -1 ||
-		   tri.deg == -1 ||
-		   tri.hypotenuse == -1 ||
-		   tri.opposite == -1 ||
-		   tri.rad == -1) {
+	missingValueCount := 0
+
+	if tri.adjacent == -1 {missingValueCount += 1}
+	if tri.deg == -1 {missingValueCount += 1}
+	if tri.hypotenuse == -1 {missingValueCount += 1}
+	if tri.opposite == -1 {missingValueCount += 1}
+	if tri.rad == -1 {missingValueCount += 1}
+
+	if missingValueCount == 0 {
 		return -1, CalcPartOfTriangleReturnValues.NoMissingValue
+	}
+	if missingValueCount > 1 {
+		return -1, CalcPartOfTriangleReturnValues.ToManyMissingValues
 	}
 
 	// No angle information provided.
@@ -149,6 +158,18 @@ CalcMissingPartOfTriangle :: proc(
 		// Exactly one angle representation exists.
 		// (degrees XOR radians)
 	} else if (tri.rad == 0) != (tri.deg == 0) {
+		definedSides := 0
+
+		if tri.adjacent != 0 {definedSides += 1}
+		if tri.hypotenuse != 0 {definedSides += 1}
+		if tri.opposite != 0 {definedSides += 1}
+
+		if definedSides < 2 {
+			return -1, CalcPartOfTriangleReturnValues.NotEoughInfo
+		}
+		if definedSides > 2 {
+			return -1, CalcPartOfTriangleReturnValues.ToManyValues
+		}
 
 		// Opposite + Hypotenuse available.
 		// Use sine relationships.
@@ -401,6 +422,12 @@ GetMissingValue :: proc(input: []string) -> (value: f32, message: string, ok: bo
 	case CalcPartOfTriangleReturnValues.NoMissingValue:
 		message = "Error: No missing part to find. Please define one with '?'"
 		ok = false
+	case CalcPartOfTriangleReturnValues.ToManyMissingValues:
+		message = "Error: To many missing parts to find. Please only define one '?'"
+		ok = false
+	case CalcPartOfTriangleReturnValues.ToManyValues:
+		ok = false
+		message = "Error: You can only define three parts of the triangle"
 	case CalcPartOfTriangleReturnValues.NotEoughInfo:
 		ok = false
 		message = "Error: Not enough info to find the part you are looking for"
