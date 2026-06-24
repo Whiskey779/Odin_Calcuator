@@ -13,17 +13,18 @@
 ## ToDo List
 
 - Building
-  - Get input from os.args
+  - Get input from os.args ✅
   - Calc
     - input to triangle parser ✅
     - Trig calc
+      - handle edge cases
       - Pythagorean Theorem ✅
         - Finding the Hypotenuse ✅
         - Findin not Hypotenuse ✅
-      - SOH CAH TOA
-        - sin
-        - cos
-        - tan
+      - SOH CAH TOA ✅
+        - sin ✅
+        - cos ✅
+        - tan ✅
   - help command
 - Testing
   - Get input from os.args
