@@ -436,7 +436,7 @@ GetMissingValue :: proc(input: []string) -> (value: f32, message: string, ok: bo
 		message = "Error: Faild to find missing side"
 	case CalcPartOfTriangleReturnValues.NotANumber:
 		ok = false
-		message = "Error: Please make sure that the triangle is posible. (hint: make sure the hypotenuse is bigger than the opposite and adjacent)"
+		message = "Error: Please make sure that the triangle is possible. (hint: make sure the hypotenuse is bigger than the opposite and adjacent)"
 	case CalcPartOfTriangleReturnValues.FoundSideOpposite:
 		value = ans
 		message = "The opposite side is equal to"
